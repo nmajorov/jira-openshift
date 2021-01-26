@@ -1,4 +1,4 @@
-FROM fedora:28
+FROM docker.io/fedora:28
 
 MAINTAINER \
 [Nikolaj Majorov <nikolaj@majorov.biz>]
@@ -14,15 +14,18 @@ dnf clean all
 COPY atlassian-installed.zip /tmp/atlassian-installed.zip
 RUN unzip  /tmp/atlassian-installed.zip  -d /opt/ && rm -f /tmp/atlassian-installed.zip
 
-# add jboss os user
-#RUN mkdir /opt/atlassian/jira && \
+RUN mkdir -p /var/atlassian/application-data/jira
+
 RUN groupadd jira  && \
 useradd -s /bin/bash -d  /opt/atlassian/jira  -m -g jira jira
 
 
 
 
-RUN  chown -R jira:jira /opt/attlasian
+RUN  chown -R jira:jira /opt/atlassian
+
+RUN  chown -R jira:jira /var/atlassian/application-data/jira
+
 
 # Switch back to jboss user
 USER jira
@@ -32,4 +35,4 @@ EXPOSE 8080 3306
 
 
 # Set the default command to run on boot
-CMD ["/opt/attlasian/jira/bin/start-jira", "-fg"]
+CMD ["/opt/atlassian/jira/bin/start-jira.sh", "-fg"]
