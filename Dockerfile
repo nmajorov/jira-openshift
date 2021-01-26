@@ -16,10 +16,8 @@ RUN unzip  /tmp/atlassian-installed.zip  -d /opt/ && rm -f /tmp/atlassian-instal
 
 RUN mkdir -p /var/atlassian/application-data/jira
 
-RUN groupadd jira  && \
-useradd -s /bin/bash -d  /opt/atlassian/jira  -m -g jira jira
-
-
+RUN groupadd -r jira -g 1000 && useradd -u 1000 -r -g jira -m -d /opt/atlassian -s /sbin/nologin -c "jira user" jira && \
+    chmod 755 /opt/atlassian
 
 
 RUN  chown -R jira:jira /opt/atlassian
@@ -27,12 +25,12 @@ RUN  chown -R jira:jira /opt/atlassian
 RUN  chown -R jira:jira /var/atlassian/application-data/jira
 
 
-# Switch back to jboss user
+
+
+EXPOSE 8080
+
+#Specify the user which should be used to execute all commands below
 USER jira
-
-
-EXPOSE 8080 3306
-
 
 # Set the default command to run on boot
 CMD ["/opt/atlassian/jira/bin/start-jira.sh", "-fg"]
